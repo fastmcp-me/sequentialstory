@@ -1,7 +1,8 @@
 """Server implementation for Sequential Tools."""
 
 from collections.abc import Callable
-from typing import Any, TextIO
+from enum import Enum
+from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
@@ -11,40 +12,104 @@ from .sequential_thinking_processor import ProcessResult as ThinkingProcessResul
 from .sequential_thinking_processor import SequentialThinkingProcessor, SequentialThoughtData
 
 
+class ToolType(Enum):
+    """Available tool types for Sequential Tools server."""
+
+    STORY = "story"
+    THINKING = "thinking"
+
+
 class SequentialToolsServer:
     """Server for Sequential Tools including Sequential Story and Sequential Thinking tools."""
 
-    def __init__(self, metadata: dict[str, Any] | None = None) -> None:
+    def __init__(self, metadata: dict[str, Any] | None = None, config: dict[str, Any] | None = None) -> None:
         """Initialize the server with MCP components.
 
         Args:
             metadata: Optional metadata dictionary with server information for Smithery.
                      Expected fields: name, version, description, author, etc.
+            config: Optional configuration dictionary to control which tools are enabled.
+                    Available options:
+                    - enabled_tools: List of tool types to enable. Options: [ToolType.STORY]
+                      or [ToolType.THINKING]. By default, both tools are enabled.
 
         """
-        # Use provided metadata or defaults
         meta = metadata or {}
+        self.config = config or {}
+
+        # Initialize processors
+        self.story_processor: SequentialStoryProcessor | None = None
+        self.thinking_processor: SequentialThinkingProcessor | None = None
+        self.sequentialstory_tool = None
+        self.sequentialthinking_tool = None
+
+        # Determine which tools should be enabled and initialize them
+        self.enabled_tools = self._resolve_enabled_tools()
+
+        # Set up MCP server
         self.mcp = FastMCP(
             name=meta.get("name", "sequential-tools-server"),
             version=meta.get("version", "0.1.0"),
-            description=meta.get("description", "Sequential Thinking and Sequential Story tools for MCP"),
+            description=self._get_description(),
         )
 
-        # Initialize processors
-        self.story_processor = SequentialStoryProcessor()
-        self.thinking_processor = SequentialThinkingProcessor()
+        # Initialize and register tools
+        self._initialize_processors()
+        self._register_tools()
 
-        # Register tools
-        self.sequentialstory_tool = self.create_sequentialstory_tool()
-        self.sequentialthinking_tool = self.create_sequentialthinking_tool()
+    def _resolve_enabled_tools(self) -> set[str]:
+        """Determine which tools should be enabled based on configuration."""
+        # Get enabled tools from config
+        enabled_config = self.config.get("enabled_tools", [])
+
+        # Convert to set of string values
+        enabled_tools = set()
+        for tool in enabled_config:
+            tool_value = tool.value if isinstance(tool, ToolType) else tool
+            enabled_tools.add(tool_value)
+
+        # If nothing specified, enable both tools
+        if not enabled_tools:
+            return {ToolType.STORY.value, ToolType.THINKING.value}
+
+        return enabled_tools
+
+    def _get_description(self) -> str:
+        """Generate appropriate description based on enabled tools."""
+        thinking_enabled = ToolType.THINKING.value in self.enabled_tools
+        story_enabled = ToolType.STORY.value in self.enabled_tools
+
+        if thinking_enabled and story_enabled:
+            return "Sequential Thinking and Sequential Story tools for MCP"
+        if thinking_enabled:
+            return "Sequential Thinking tool for MCP"
+        if story_enabled:
+            return "Sequential Story tool for MCP"
+        return "Sequential Tools MCP Server (no tools enabled)"
+
+    def _initialize_processors(self) -> None:
+        """Initialize the processors for enabled tools."""
+        if ToolType.STORY.value in self.enabled_tools:
+            self.story_processor = SequentialStoryProcessor()
+
+        if ToolType.THINKING.value in self.enabled_tools:
+            self.thinking_processor = SequentialThinkingProcessor()
+
+    def _register_tools(self) -> None:
+        """Register the enabled tools."""
+        if ToolType.STORY.value in self.enabled_tools and self.story_processor is not None:
+            self.sequentialstory_tool = self.create_sequentialstory_tool()
+
+        if ToolType.THINKING.value in self.enabled_tools and self.thinking_processor is not None:
+            self.sequentialthinking_tool = self.create_sequentialthinking_tool()
 
     def create_sequentialstory_tool(self) -> Callable[[StoryElementData], StoryProcessResult]:
-        """Create and register the Sequential Story tool.
+        """Create and register the Sequential Story tool."""
+        if self.story_processor is None:
+            msg = "Cannot create Sequential Story tool: story processor is not initialized"
+            raise RuntimeError(msg)
 
-        Returns:
-            The registered tool callable
-
-        """
+        processor = self.story_processor
 
         @self.mcp.tool(
             description="""A detailed tool for narrative-based problem-solving through Sequential Story.
@@ -95,27 +160,18 @@ class SequentialToolsServer:
         7. Only set next_element_needed to false when the story is complete"""
         )
         def sequentialstory(data: StoryElementData) -> StoryProcessResult:
-            """Process a Sequential Story element.
-
-            Args:
-                data: The story element data
-
-            Returns:
-                The processing result
-
-            """
-            # Process the StoryElementData directly
-            return self.story_processor.process_element(data)
+            """Process a Sequential Story element."""
+            return processor.process_element(data)
 
         return sequentialstory
 
     def create_sequentialthinking_tool(self) -> Callable[[SequentialThoughtData], ThinkingProcessResult]:
-        """Create and register the Sequential Thinking tool.
+        """Create and register the Sequential Thinking tool."""
+        if self.thinking_processor is None:
+            msg = "Cannot create Sequential Thinking tool: thinking processor is not initialized"
+            raise RuntimeError(msg)
 
-        Returns:
-            The registered tool callable
-
-        """
+        processor = self.thinking_processor
 
         @self.mcp.tool(
             description="""A detailed tool for dynamic and reflective problem-solving through Sequential Thinking.
@@ -175,49 +231,20 @@ class SequentialToolsServer:
         11. Only set next_thought_needed to false when truly done and a satisfactory answer is reached"""
         )
         def sequentialthinking(data: SequentialThoughtData) -> ThinkingProcessResult:
-            """Process a Sequential Thinking element.
-
-            Args:
-                data: The thought element data
-
-            Returns:
-                The processing result
-
-            """
-            # Process the SequentialThoughtData directly
-            return self.thinking_processor.process_thought(data)
+            """Process a Sequential Thinking element."""
+            return processor.process_thought(data)
 
         return sequentialthinking
 
     def run(self) -> None:
         """Run the server with stdio transport."""
-        # Run the MCP server - using run method instead of run_async
         self.mcp.run()
-        print(
-            "Sequential Tools MCP Server running on stdio with Sequential Story and Sequential Thinking tools",
-            file=self.get_stderr(),
-        )
 
-    def get_stderr(self) -> TextIO:
-        """Get the stderr stream for logging.
+        ", ".join(self.enabled_tools)
 
-        Returns:
-            sys.stderr for printing messages
-
-        """
-        import sys
-
-        return sys.stderr
-
-    def _import_sys(self) -> TextIO:
-        """Import sys module and return stderr.
-
-        Returns:
-            sys.stderr for printing messages
-
-        """
-        # Deprecated: use get_stderr() instead
-        return self.get_stderr()
+    def get_enabled_tools(self) -> list[str]:
+        """Return the list of enabled tools."""
+        return list(self.enabled_tools)
 
 
 # For backward compatibility

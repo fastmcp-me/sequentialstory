@@ -198,13 +198,6 @@ testpaths = ["tests"]
 addopts = "--cov-config=pyproject.toml"
 
 [tool.coverage.run]
-omit = [ "*/__init__.py", "src/main.py"]
+omit = [ "*/__init__.py","src/utils/logging.py","src/utils/settings.py"]
 
-[tool.coverage.report]
-exclude_also = [
-    "def __repr__",
-    "def get_stderr",
-    "def _import_sys",
-    "async def run",
-    "if __name__ == .__main__.:"
-]
+

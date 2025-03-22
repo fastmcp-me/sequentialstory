@@ -10,38 +10,44 @@ Project Repository: https://github.com/dhkts1/sequentialStory
 """
 
 import json
-import logging
 import sys
 
 from src.server import SequentialToolsServer
+from src.utils.logging import get_logger, setup_logging
+from src.utils.settings import get_settings
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    stream=sys.stderr,
-)
-logger = logging.getLogger("sequential_tools")
+# Set up logging
+setup_logging()
+logger = get_logger("sequential_tools")
 
-# Server metadata for Smithery registry
-SERVER_METADATA = {
-    "name": "sequential-tools",
-    "display_name": "Sequential Tools & Sequential Story",
-    "version": "0.1.0",
-    "description": "MCP tools for dynamic problem-solving through Sequential Thinking and Sequential Story",
-    "author": "dhkts1",
-    "repository": "https://github.com/dhkts1/sequentialStory",
-    "documentation": "https://github.com/dhkts1/sequentialStory/README.md",
-}
 
-# Create the server with metadata - this is the object we'll export for MCP
-server = SequentialToolsServer(metadata=SERVER_METADATA)
+def create_server() -> SequentialToolsServer:
+    """Create and configure the Sequential Tools server.
+
+    Uses pydantic Settings to configure the server, with settings loaded from
+    environment variables with the SEQUENTIAL_TOOLS_ prefix.
+
+    Returns:
+        Configured SequentialToolsServer instance
+
+    """
+    settings = get_settings()
+
+    # Create server with settings
+    return SequentialToolsServer(metadata=settings.server_metadata, config=settings.server_config)
+
+
+# Create server instance with configuration from settings
+server = create_server()
 
 # When running as a script directly
 if __name__ == "__main__":
     try:
+        settings = get_settings()
         logger.info("Starting Sequential Tools MCP Server...")
-        logger.info("Server metadata: %s", json.dumps(SERVER_METADATA, indent=2))
+        logger.info("Server metadata: %s", json.dumps(settings.server_metadata, indent=2))
+        logger.info("Server configuration: %s", json.dumps({"enabled_tools": server.get_enabled_tools()}, indent=2))
+        logger.info("Enabled tools: %s", ", ".join(server.get_enabled_tools()))
         logger.info("Using stdin/stdout transport (not websockets)")
         server.run()
     except KeyboardInterrupt:

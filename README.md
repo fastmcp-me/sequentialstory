@@ -31,6 +31,23 @@ Both approaches leverage the power of sequencing and structure to enhance memory
 - Full MCP protocol support for integration with AI systems
 - Support for branching and revision
 
+## Configuration
+
+The Sequential Tools server can be configured to enable specific tools using the command line `--enable` argument:
+
+```bash
+# Enable both tools (default)
+python sequential_tools.py
+
+# Enable only the Sequential Thinking tool
+python sequential_tools.py --enable thinking
+
+# Enable only the Sequential Story tool
+python sequential_tools.py --enable story
+```
+
+By default, both tools (Sequential Thinking and Sequential Story) are enabled.
+
 ## Installation
 
 ```bash
@@ -49,6 +66,20 @@ uv sync --group dev
 # Or install in development mode
 uv pip install -e .
 ```
+
+### Installing Specific Tools
+
+You can install the server with only specific tools enabled:
+
+```bash
+# Install with only the Sequential Thinking tool
+mcp install -e . -n "Sequential Thinking" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_ENABLE=thinking"
+
+# Install with only the Sequential Story tool
+mcp install -e . -n "Sequential Story" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_ENABLE=story"
+```
+
+This is useful when you want to focus on a specific problem-solving approach or when integrating with other MCP tools. You can also update the environment variables directly in the Claude desktop app after installation.
 
 ## Usage
 
