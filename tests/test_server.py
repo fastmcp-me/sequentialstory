@@ -1,10 +1,10 @@
-"""Tests for the server module."""
+"""Tests for the Sequential Tools server module."""
 
 from unittest.mock import MagicMock, patch
 
+from src.sequential_story_processor import ContentItem, ProcessResult, StoryElementData
 from src.sequential_thinking_processor import SequentialThoughtData
 from src.server import SequentialToolsServer
-from src.story_processor import ContentItem, ProcessResult, StoryElementData
 
 
 class TestSequentialToolsServer:
@@ -27,6 +27,7 @@ class TestSequentialToolsServer:
             mock_fastmcp.assert_called_once_with(
                 name="sequential-tools-server",
                 version="0.1.0",
+                description="Sequential Thinking and Sequential Story tools for MCP",
             )
             mock_story_processor.assert_called_once()
             mock_thinking_processor.assert_called_once()
@@ -35,7 +36,7 @@ class TestSequentialToolsServer:
             assert server.thinking_processor == mock_thinking_processor.return_value
 
     def test_create_sequentialstory_tool(self) -> None:
-        """Test creation of the sequentialstory tool."""
+        """Test creation of the Sequential Story tool."""
         with patch("src.server.FastMCP"):
             # Setup mocks
             server = SequentialToolsServer()
@@ -59,7 +60,7 @@ class TestSequentialToolsServer:
             server.mcp.tool.assert_called_once()
 
     def test_create_sequentialthinking_tool(self) -> None:
-        """Test creation of the sequentialthinking tool."""
+        """Test creation of the Sequential Thinking tool."""
         with patch("src.server.FastMCP"):
             # Setup mocks
             server = SequentialToolsServer()
@@ -83,7 +84,7 @@ class TestSequentialToolsServer:
             server.mcp.tool.assert_called_once()
 
     def test_sequentialstory_function(self) -> None:
-        """Test the sequentialstory function."""
+        """Test the Sequential Story function."""
         # Setup server with mocked components
         with patch("src.server.SequentialStoryProcessor") as mock_processor_class:
             # Setup the processor mock
@@ -116,7 +117,7 @@ class TestSequentialToolsServer:
             assert result == expected_result
 
     def test_sequentialthinking_function(self) -> None:
-        """Test the sequentialthinking function."""
+        """Test the Sequential Thinking function."""
         # Setup server with mocked components
         with patch("src.server.SequentialThinkingProcessor") as mock_processor_class:
             # Setup the processor mock

@@ -1,24 +1,33 @@
-"""Server implementation for sequential MCP tools."""
+"""Server implementation for Sequential Tools."""
 
 from collections.abc import Callable
-from typing import TextIO
+from typing import Any, TextIO
 
 from mcp.server.fastmcp import FastMCP
 
+from .sequential_story_processor import ProcessResult as StoryProcessResult
+from .sequential_story_processor import SequentialStoryProcessor, StoryElementData
 from .sequential_thinking_processor import ProcessResult as ThinkingProcessResult
 from .sequential_thinking_processor import SequentialThinkingProcessor, SequentialThoughtData
-from .story_processor import ProcessResult as StoryProcessResult
-from .story_processor import SequentialStoryProcessor, StoryElementData
 
 
 class SequentialToolsServer:
-    """Server for Sequential MCP tools including Story and Thinking tools."""
+    """Server for Sequential Tools including Sequential Story and Sequential Thinking tools."""
 
-    def __init__(self) -> None:
-        """Initialize the server with MCP components."""
+    def __init__(self, metadata: dict[str, Any] | None = None) -> None:
+        """Initialize the server with MCP components.
+
+        Args:
+            metadata: Optional metadata dictionary with server information for Smithery.
+                     Expected fields: name, version, description, author, etc.
+
+        """
+        # Use provided metadata or defaults
+        meta = metadata or {}
         self.mcp = FastMCP(
-            name="sequential-tools-server",
-            version="0.1.0",
+            name=meta.get("name", "sequential-tools-server"),
+            version=meta.get("version", "0.1.0"),
+            description=meta.get("description", "Sequential Thinking and Sequential Story tools for MCP"),
         )
 
         # Initialize processors
@@ -30,7 +39,7 @@ class SequentialToolsServer:
         self.sequentialthinking_tool = self.create_sequentialthinking_tool()
 
     def create_sequentialstory_tool(self) -> Callable[[StoryElementData], StoryProcessResult]:
-        """Create and register the sequential story tool.
+        """Create and register the Sequential Story tool.
 
         Returns:
             The registered tool callable
@@ -38,7 +47,7 @@ class SequentialToolsServer:
         """
 
         @self.mcp.tool(
-            description="""A detailed tool for narrative-based problem-solving through sequential storytelling.
+            description="""A detailed tool for narrative-based problem-solving through Sequential Story.
 
         This tool helps structure complex problems as story elements that build on each other.
         Each element contributes to a coherent narrative that's easier to remember than abstract concepts.
@@ -86,7 +95,7 @@ class SequentialToolsServer:
         7. Only set next_element_needed to false when the story is complete"""
         )
         def sequentialstory(data: StoryElementData) -> StoryProcessResult:
-            """Process a sequential story element.
+            """Process a Sequential Story element.
 
             Args:
                 data: The story element data
@@ -101,7 +110,7 @@ class SequentialToolsServer:
         return sequentialstory
 
     def create_sequentialthinking_tool(self) -> Callable[[SequentialThoughtData], ThinkingProcessResult]:
-        """Create and register the sequential thinking tool.
+        """Create and register the Sequential Thinking tool.
 
         Returns:
             The registered tool callable
@@ -109,7 +118,7 @@ class SequentialToolsServer:
         """
 
         @self.mcp.tool(
-            description="""A detailed tool for dynamic and reflective problem-solving through thoughts.
+            description="""A detailed tool for dynamic and reflective problem-solving through Sequential Thinking.
 
         This tool helps analyze problems through a flexible thinking process that can adapt and evolve.
         Each thought can build on, question, or revise previous insights as understanding deepens.
@@ -166,7 +175,7 @@ class SequentialToolsServer:
         11. Only set next_thought_needed to false when truly done and a satisfactory answer is reached"""
         )
         def sequentialthinking(data: SequentialThoughtData) -> ThinkingProcessResult:
-            """Process a sequential thinking element.
+            """Process a Sequential Thinking element.
 
             Args:
                 data: The thought element data
@@ -184,7 +193,10 @@ class SequentialToolsServer:
         """Run the server with stdio transport."""
         # Run the MCP server - using run method instead of run_async
         self.mcp.run()
-        print("Sequential Tools MCP Server running on stdio with Story and Thinking tools", file=self.get_stderr())
+        print(
+            "Sequential Tools MCP Server running on stdio with Sequential Story and Sequential Thinking tools",
+            file=self.get_stderr(),
+        )
 
     def get_stderr(self) -> TextIO:
         """Get the stderr stream for logging.

@@ -1,7 +1,7 @@
 """Tests for the story_processor module."""
 
 from rich.panel import Panel
-from src.story_processor import ContentItem, ProcessResult, SequentialStoryProcessor, StoryElementData
+from src.sequential_story_processor import ContentItem, ProcessResult, SequentialStoryProcessor, StoryElementData
 
 
 class TestStoryElementData:

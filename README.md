@@ -1,6 +1,6 @@
 # Sequential Tools MCP Server
 
-A Model Context Protocol (MCP) server for sequential storytelling and sequential thinking as mnemonic techniques for problem-solving.
+A Model Context Protocol (MCP) server for Sequential Thinking and Sequential Story as mnemonic techniques for problem-solving.
 
 ## Overview
 
@@ -36,7 +36,7 @@ Both approaches leverage the power of sequencing and structure to enhance memory
 ```bash
 # Clone the repository
 git clone https://github.com/dhkts1/sequentialStory
-cd sequential-story
+cd sequentialStory
 
 # Install just the base dependencies using uv
 uv venv
@@ -55,18 +55,32 @@ uv pip install -e .
 ### Running the server
 
 ```bash
-# Run directly using the main script
-python main.py
+# Run directly using the sequential_tools.py script
+python sequential_tools.py
 ```
 
 ### Installing with MCP
 
 ```bash
 # Install in the Claude desktop app
-mcp install -e . -n "Sequential Tools Server" main.py:server
+mcp install -e . -n "Sequential Tools" sequential_tools.py:server
 
 # For development with the MCP Inspector
-mcp dev main.py:server
+mcp dev sequential_tools.py:server
+```
+
+### Installing with Smithery
+
+To register and install with Smithery:
+
+1. Visit [Smithery.ai](https://smithery.ai) and create an account
+2. Add your server to the Smithery registry
+3. Use the stdin/stdout transport option (not WebSockets)
+4. Deploy your server following Smithery's instructions
+
+```bash
+# Local testing for Smithery compatibility
+python sequential_tools.py
 ```
 
 ### Example story element
