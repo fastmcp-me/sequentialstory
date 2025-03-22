@@ -31,10 +31,6 @@ class Settings(BaseSettings):
         default="Sequential Tools MCP Server",
         description="The name of the application.",
     )
-    APP_VERSION: str = Field(
-        default="0.1.0",
-        description="The version of the application.",
-    )
 
     LOG_LEVEL: str = Field(
         default="INFO",
@@ -69,9 +65,8 @@ class Settings(BaseSettings):
     def server_metadata(self) -> dict[str, str]:
         """Get the server metadata for Smithery registry."""
         return {
-            "name": "sequential-tools",
-            "display_name": "Sequential Tools & Sequential Story",
-            "version": "0.1.4",
+            "name": "sequential-story",
+            "display_name": "Sequential Story",
             "description": "MCP tools for dynamic problem-solving through Sequential Thinking and Sequential Story",
             "author": "dhkts1",
             "repository": "https://github.com/dhkts1/sequentialStory",

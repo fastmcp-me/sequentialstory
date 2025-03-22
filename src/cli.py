@@ -12,7 +12,7 @@ from src.utils.settings import get_settings
 
 # Set up logging
 setup_logging()
-logger = get_logger("sequential_story")
+logger = get_logger("sequential_tools")
 
 # Create server instance
 server = SequentialToolsServer()

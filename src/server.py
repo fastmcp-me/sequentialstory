@@ -17,7 +17,6 @@ class SequentialToolsServer:
         # Create the MCP server
         self.mcp = FastMCP(
             name=settings.server_metadata["name"],
-            version=settings.server_metadata["version"],
             description=self._get_description(),
         )
 

@@ -17,7 +17,6 @@ class TestSequentialToolsServer:
         mock_settings.enabled_tools = [ToolType.STORY, ToolType.THINKING]
         mock_settings.server_metadata = {
             "name": "test-name",
-            "version": "test-version",
         }
 
         # Initialize server
@@ -27,7 +26,6 @@ class TestSequentialToolsServer:
         mock_fast_mcp.assert_called_once()
         _, kwargs = mock_fast_mcp.call_args
         assert kwargs["name"] == "test-name"
-        assert kwargs["version"] == "test-version"
         assert "Sequential Thinking and Sequential Story" in kwargs["description"]
 
         # Verify the MCP instance was created
