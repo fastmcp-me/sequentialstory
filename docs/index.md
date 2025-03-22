@@ -1,3 +1,1 @@
-# Sequential Story MCP Server
-
-{! README.md !}
+--8<-- "README.md"

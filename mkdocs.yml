@@ -1,5 +1,5 @@
-site_name: Sequential Story MCP Server
-site_description: A Model Context Protocol (MCP) server for sequential storytelling as a mnemonic technique for problem-solving
+site_name: Sequential Tools MCP Server
+site_description: A Model Context Protocol (MCP) server for sequential storytelling and sequential thinking as mnemonic techniques for problem-solving
 site_author: Gil Portnoy
 repo_url: https://github.com/dhkts1/sequentialStory
 repo_name: sequentialStory
