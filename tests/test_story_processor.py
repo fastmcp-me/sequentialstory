@@ -139,6 +139,17 @@ class TestSequentialStoryProcessor:
     def test_branch_handling(self) -> None:
         """Test branch handling."""
         processor = SequentialStoryProcessor()
+
+        # First create and add element 1
+        first_element = StoryElementData(
+            element="First element",
+            element_number=1,
+            total_elements=3,
+            next_element_needed=True,
+        )
+        processor.process_element(first_element)
+
+        # Then create the branch element
         element = StoryElementData(
             element="Branch element",
             element_number=2,

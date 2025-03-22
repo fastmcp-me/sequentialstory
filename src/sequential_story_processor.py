@@ -3,9 +3,8 @@
 from collections.abc import Callable
 from typing import Any, Self
 
-# Add imports for mcp
 from mcp.server.fastmcp import FastMCP
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, field_validator, model_validator
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
@@ -28,6 +27,78 @@ class StoryElementData(BaseModel):
     setting: str | None = None
     tone: str | None = None
     plot_point: str | None = None
+
+    @field_validator("element")
+    @classmethod
+    def validate_element_not_empty(cls, v: str) -> str:
+        """Validate that element is not empty.
+
+        Args:
+            v: The element value
+
+        Returns:
+            The validated element value
+
+        Raises:
+            ValueError: If element is empty
+
+        """
+        if not v.strip():
+            msg = "Story element cannot be empty"
+            raise ValueError(msg)
+        return v
+
+    @field_validator("element_number", "total_elements")
+    @classmethod
+    def validate_positive_numbers(cls, v: int) -> int:
+        """Validate that number fields are positive.
+
+        Args:
+            v: The number value
+
+        Returns:
+            The validated number value
+
+        Raises:
+            ValueError: If number is not positive
+
+        """
+        if v <= 0:
+            msg = "Number values must be positive"
+            raise ValueError(msg)
+        return v
+
+    @model_validator(mode="after")
+    def validate_branch_id(self) -> Self:
+        """Validate branch_id is set when branch_from_element is set.
+
+        Returns:
+            Self with validated branch_id and branch_from_element
+
+        Raises:
+            ValueError: If branch_from_element is set but branch_id is not
+
+        """
+        if self.branch_from_element is not None and self.branch_id is None:
+            msg = "branch_id must be set when branch_from_element is set"
+            raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def validate_revision_element(self) -> Self:
+        """Validate revises_element is set when is_revision is True.
+
+        Returns:
+            Self with validated is_revision and revises_element
+
+        Raises:
+            ValueError: If is_revision is True but revises_element is not set
+
+        """
+        if self.is_revision and self.revises_element is None:
+            msg = "revises_element must be set when is_revision is True"
+            raise ValueError(msg)
+        return self
 
     @model_validator(mode="after")
     def adjust_total_elements(self) -> Self:
@@ -308,6 +379,65 @@ class SequentialStoryProcessor:
             border_style=style,
         )
 
+    def _validate_element_references(self, element: StoryElementData) -> ValueError | None:
+        """Validate that element references point to existing elements.
+
+        Args:
+            element: The story element to validate
+
+        Returns:
+            ValueError if references are invalid, None otherwise
+
+        """
+        # Check revision references
+        if element.revises_element is not None:
+            if element.revises_element <= 0:
+                msg = f"revises_element {element.revises_element} must be positive"
+                return ValueError(msg)
+            if element.revises_element > len(self.element_history):
+                msg = f"revises_element {element.revises_element} does not refer to an existing element"
+                return ValueError(msg)
+
+        # Check branch references
+        if element.branch_from_element is not None:
+            if element.branch_from_element <= 0:
+                msg = f"branch_from_element {element.branch_from_element} must be positive"
+                return ValueError(msg)
+            if element.branch_from_element > len(self.element_history):
+                msg = f"branch_from_element {element.branch_from_element} does not refer to an existing element"
+                return ValueError(msg)
+
+        return None
+
+    def _display_element(self, element: StoryElementData) -> None:
+        """Display a formatted element and story completion status.
+
+        Args:
+            element: The story element to display
+
+        """
+        self.console.print(self.format_element(element))
+
+        if not self.is_story_complete():
+            self.console.print("Note: Story is not yet complete", style="bold yellow")
+
+    def _update_state(self, element: StoryElementData) -> None:
+        """Update the processor state with a new element.
+
+        Args:
+            element: The story element to process
+
+        """
+        # Add to history
+        self.element_history.append(element)
+
+        # Update story completion status
+        if element.needs_more_elements is not None:
+            self.story_needs_more_elements = element.needs_more_elements
+
+        # Handle branches
+        self._handle_branch(element)
+
     def _handle_branch(self, element: StoryElementData) -> None:
         """Handle branch-related processing for an element.
 
@@ -331,26 +461,24 @@ class SequentialStoryProcessor:
 
         """
         try:
-            # Add to history
-            self.element_history.append(element)
+            # Validate references
+            validation_error = self._validate_element_references(element)
+            if validation_error:
+                return ProcessResult.create_error(validation_error)
 
-            # Update story completion status
-            if element.needs_more_elements is not None:
-                self.story_needs_more_elements = element.needs_more_elements
+            # Update state
+            self._update_state(element)
 
-            # Handle branches
-            self._handle_branch(element)
+            # Display element
+            self._display_element(element)
 
-            # Display the formatted element
-            self.console.print(self.format_element(element))
-
-            # Display story completion status
-            if not self.is_story_complete():
-                self.console.print("Note: Story is not yet complete", style="bold yellow")
-
-            # Return result using factory method
+            # Return success result
             return ProcessResult.create_success(element, list(self.branches.keys()), len(self.element_history))
+        except ValueError as e:
+            # Handle expected validation errors
+            return ProcessResult.create_error(e)
         except Exception as e:
+            # Handle unexpected runtime errors
             return ProcessResult.create_error(e)
 
     def register_with_mcp(self, mcp: FastMCP) -> Callable[[StoryElementData], ProcessResult]:
