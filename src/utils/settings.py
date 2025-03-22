@@ -18,14 +18,13 @@ class ToolType(StrEnum):
 
 
 class Settings(BaseSettings):
-    """Application settings for Sequential Tools MCP Server.
+    """Application settings for Sequential Tools MCP Server."""
 
-    Provides a centralized configuration with environment variable support.
-    Settings can be configured via environment variables with the prefix SEQUENTIAL_TOOLS_
-    or via command-line arguments.
-    """
-
-    model_config = SettingsConfigDict(cli_parse_args=True)
+    model_config = SettingsConfigDict(
+        env_prefix="",
+        json_encoders={},  # Disable JSON encoding for env vars
+        json_schema_extra={"env_json_parser": None},  # Disable JSON parsing for env vars
+    )
 
     # Basic application info
     APP_NAME: str = Field(
@@ -42,8 +41,8 @@ class Settings(BaseSettings):
     )
 
     # Tool configuration
-    tools: list[ToolType] | None = Field(
-        default=None,
+    tools: list[ToolType] = Field(
+        default=[ToolType.THINKING, ToolType.STORY],
         description="List of tools to enable. If None, all tools are enabled.",
     )
 

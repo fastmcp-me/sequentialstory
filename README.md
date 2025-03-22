@@ -69,18 +69,20 @@ uv pip install -e .
 
 ### Installing Specific Tools
 
-You can install the server with only specific tools enabled:
+You can install the server with only specific tools enabled using environment variables:
 
 ```bash
 # Install with only the Sequential Thinking tool
-mcp install -e . -n "Sequential Thinking" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_TOOLS=thinking"
+mcp install -e . -n "Sequential Thinking" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS='[\"thinking\"]'"
 
 # Install with only the Sequential Story tool
-mcp install -e . -n "Sequential Story" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_TOOLS=story"
+mcp install -e . -n "Sequential Story" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS='[\"story\"]'"
 
 # Install with multiple tools
-mcp install -e . -n "Sequential Tools" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_TOOLS=thinking,story"
+mcp install -e . -n "Sequential Tools" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS='[\"thinking\",\"story\"]'"
 ```
+
+The environment variable `SEQUENTIAL_TOOLS` controls which tools are enabled.
 
 This is useful when you want to focus on a specific problem-solving approach or when integrating with other MCP tools. You can also update the environment variables directly in the Claude desktop app after installation.
 
