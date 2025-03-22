@@ -35,14 +35,19 @@ class Settings(BaseSettings):
         default="0.1.0",
         description="The version of the application.",
     )
-    DEBUG: bool = Field(
-        default=False,
-        description="Enable or disable debug mode.",
+
+    LOG_LEVEL: str = Field(
+        default="INFO",
+        description="The logging level.",
+    )
+    LOG_FORMAT: str = Field(
+        default="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        description="The log message format.",
     )
 
     # Tool configuration
     tools: list[ToolType] = Field(
-        default=[ToolType.THINKING, ToolType.STORY],
+        default=[ToolType.STORY],
         description="List of tools to enable. If None, all tools are enabled.",
     )
 

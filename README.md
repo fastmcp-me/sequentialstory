@@ -36,7 +36,7 @@ Both approaches leverage the power of sequencing and structure to enhance memory
 The Sequential Tools server can be configured to enable specific tools using environment variables or command line arguments:
 
 ```bash
-# Enable both tools (default)
+# Enable Sequential Story tool (default)
 python sequential_tools.py
 
 # Enable only the Sequential Thinking tool
@@ -45,7 +45,7 @@ python sequential_tools.py --tools=thinking
 # Enable only the Sequential Story tool
 python sequential_tools.py --tools=story
 
-# Enable multiple tools
+# Enable both tools
 python sequential_tools.py --tools=thinking,story
 ```
 ## Installation
@@ -69,20 +69,23 @@ uv pip install -e .
 
 ### Installing Specific Tools
 
-You can install the server with only specific tools enabled using environment variables:
+You can install the server with specific tools enabled using environment variables:
 
 ```bash
+# Install with only the Sequential Story tool (default)
+mcp install -e . -n "Sequential Story" sequential_tools.py:server
+
 # Install with only the Sequential Thinking tool
-mcp install -e . -n "Sequential Thinking" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS='[\"thinking\"]'"
+mcp install -e . -n "Sequential Thinking" sequential_tools.py:server --env-var "TOOLS='[\"thinking\"]'"
 
-# Install with only the Sequential Story tool
-mcp install -e . -n "Sequential Story" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS='[\"story\"]'"
+# Install with only the Sequential Story tool explicitly
+mcp install -e . -n "Sequential Story" sequential_tools.py:server --env-var "TOOLS='[\"story\"]'"
 
-# Install with multiple tools
-mcp install -e . -n "Sequential Tools" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS='[\"thinking\",\"story\"]'"
+# Install with both tools
+mcp install -e . -n "Sequential Tools" sequential_tools.py:server --env-var "TOOLS='[\"thinking\",\"story\"]'"
 ```
 
-The environment variable `SEQUENTIAL_TOOLS` controls which tools are enabled.
+The environment variable `TOOLS` controls which tools are enabled. By default, only the Sequential Story tool is enabled, but the Sequential Thinking tool can be added as needed.
 
 This is useful when you want to focus on a specific problem-solving approach or when integrating with other MCP tools. You can also update the environment variables directly in the Claude desktop app after installation.
 
