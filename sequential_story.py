@@ -1,8 +1,6 @@
-"""Sequential Tools Server - Narrative and analytical mnemonic tools.
+"""Sequential Story - Main entry point.
 
-This MCP server provides Sequential Thinking and Sequential Story tools
-that help with problem-solving, planning, and creating mnemonic narratives.
-
+This module provides the main entry point for the Sequential Story package.
 """
 
 import json
@@ -14,7 +12,7 @@ from src.utils.settings import get_settings
 
 # Set up logging
 setup_logging()
-logger = get_logger("sequential_tools")
+logger = get_logger("sequential_story")
 
 # Create server instance
 server = SequentialToolsServer()
@@ -24,7 +22,7 @@ def main() -> None:
     """Entry point function for the sequential-story command."""
     try:
         settings = get_settings()
-        logger.info("Starting Sequential Tools MCP Server...")
+        logger.info("Starting Sequential Story MCP Server...")
         logger.info("Server metadata: %s", json.dumps(settings.server_metadata, indent=2))
         logger.info("Enabled tools: %s", ", ".join(settings.enabled_tools))
 

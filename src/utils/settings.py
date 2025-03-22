@@ -71,7 +71,7 @@ class Settings(BaseSettings):
         return {
             "name": "sequential-tools",
             "display_name": "Sequential Tools & Sequential Story",
-            "version": "0.1.0",
+            "version": "0.1.4",
             "description": "MCP tools for dynamic problem-solving through Sequential Thinking and Sequential Story",
             "author": "dhkts1",
             "repository": "https://github.com/dhkts1/sequentialStory",

@@ -1,4 +1,4 @@
-# Sequential Tools MCP Server
+# Sequential Story MCP Server
 
 A Model Context Protocol (MCP) server for Sequential Thinking and Sequential Story as mnemonic techniques for problem-solving.
 
@@ -32,31 +32,18 @@ Both approaches leverage the power of sequencing and structure to enhance memory
 - Full MCP protocol support for integration with AI systems
 - Support for branching and revision
 
-## Configuration
-
-The Sequential Tools server can be configured to enable specific tools using environment variables or command line arguments:
-
-```bash
-# Enable Sequential Story tool (default)
-python sequential_tools.py
-
-# Enable only the Sequential Thinking tool
-python sequential_tools.py --tools=thinking
-
-# Enable only the Sequential Story tool
-python sequential_tools.py --tools=story
-
-# Enable both tools
-python sequential_tools.py --tools=thinking,story
-```
 ## Installation
+
+### During Development (Before Publishing to PyPI)
+
+When working with the package locally before publishing:
 
 ```bash
 # Clone the repository
 git clone https://github.com/dhkts1/sequentialStory
 cd sequentialStory
 
-# Install just the base dependencies using uv
+# Install dependencies using uv
 uv venv
 source .venv/bin/activate
 uv sync
@@ -64,51 +51,66 @@ uv sync
 # Install with development dependencies
 uv sync --group dev
 
-# Or install in development mode
+# Install in development mode
 uv pip install -e .
 ```
 
-### Installing Specific Tools
-
-You can install the server with specific tools enabled using environment variables:
+To install with MCP during development:
 
 ```bash
-# Install with only the Sequential Story tool (default)
-mcp install -e . -n "Sequential Story" sequential_tools.py:server
+# Install in the Claude desktop app from local directory
+mcp install -e . -n "Sequential Story" sequential_story.py:main
 
 # Install with only the Sequential Thinking tool
-mcp install -e . -n "Sequential Thinking" sequential_tools.py:server --env-var "TOOLS='[\"thinking\"]'"
-
-# Install with only the Sequential Story tool explicitly
-mcp install -e . -n "Sequential Story" sequential_tools.py:server --env-var "TOOLS='[\"story\"]'"
+mcp install -e . -n "Sequential Thinking" sequential_story.py:main --env-var "TOOLS='[\"thinking\"]'"
 
 # Install with both tools
-mcp install -e . -n "Sequential Tools" sequential_tools.py:server --env-var "TOOLS='[\"thinking\",\"story\"]'"
+mcp install -e . -n "Sequential Tools" sequential_story.py:main --env-var "TOOLS='[\"thinking\",\"story\"]'"
+
+# For development with the MCP Inspector
+mcp dev sequential_story.py:main
 ```
 
-The environment variable `TOOLS` controls which tools are enabled. By default, only the Sequential Story tool is enabled, but the Sequential Thinking tool can be added as needed.
-
-This is useful when you want to focus on a specific problem-solving approach or when integrating with other MCP tools. You can also update the environment variables directly in the Claude desktop app after installation.
-
-## Usage
-
-### Running the server
-
 ```bash
-# Run directly using the sequential_tools.py script
-python sequential_tools.py
+# Enable Sequential Story tool (default)
+sequential-story
+
+# Enable only the Sequential Thinking tool
+sequential-story --tools=thinking
+
+# Enable only the Sequential Story tool
+sequential-story --tools=story
+
+# Enable both tools
+sequential-story --tools=thinking,story
 ```
 
 ### Installing with MCP
 
 ```bash
 # Install in the Claude desktop app
-mcp install -e . -n "Sequential Tools" sequential_tools.py:server
+mcp install sequential-story -n "Sequential Story"
 
-# For development with the MCP Inspector
-mcp dev sequential_tools.py:server
+# Install with only the Sequential Thinking tool
+mcp install sequential-story -n "Sequential Thinking" --env-var "TOOLS='[\"thinking\"]'"
+
+# Install with only the Sequential Story tool explicitly
+mcp install sequential-story -n "Sequential Story" --env-var "TOOLS='[\"story\"]'"
+
+# Install with both tools
+mcp install sequential-story -n "Sequential Tools" --env-var "TOOLS='[\"thinking\",\"story\"]'"
 ```
 
+For development:
+
+```bash
+# For development with the MCP Inspector
+mcp dev sequential_story.py:main
+```
+
+The environment variable `TOOLS` controls which tools are enabled. By default, only the Sequential Story tool is enabled, but the Sequential Thinking tool can be added as needed.
+
+This is useful when you want to focus on a specific problem-solving approach or when integrating with other MCP tools. You can also update the environment variables directly in the Claude desktop app after installation.
 
 ### Example story element
 
@@ -145,7 +147,6 @@ uv run pre-commit install
 # Run all pre-commit checks
 poe pre
 ```
-
 ## Credits
 
 This project builds on the concepts of sequential thinking and structured problem-solving, adapting these approaches to both analytical and narrative frameworks for enhanced memory and problem-solving.
