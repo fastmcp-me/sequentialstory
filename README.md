@@ -25,6 +25,7 @@ Both approaches leverage the power of sequencing and structure to enhance memory
 - Revise or branch thinking paths as needed
 - Generate and verify solution hypotheses
 - Track thinking process completion
+- Pure Python implementation (no Node.js required)
 
 ### Common Features
 - Formatted, color-coded display of elements
@@ -149,5 +150,5 @@ poe pre
 
 This project builds on the concepts of sequential thinking and structured problem-solving, adapting these approaches to both analytical and narrative frameworks for enhanced memory and problem-solving.
 
-The Sequential Thinking implementation is inspired by the JavaScript implementation from the Model Context Protocol repositories:
+The Sequential Thinking implementation is a pure Python port inspired by the JavaScript implementation from the Model Context Protocol repositories:
 https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking
