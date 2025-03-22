@@ -83,3 +83,5 @@ pytest
 ## Credits
 
 This project is inspired by the Sequential Thinking MCP tool, adapting its approach to use narrative structures for enhanced memory and problem-solving.
+
+https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking
