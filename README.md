@@ -1,18 +1,35 @@
-# Sequential Story MCP Server
+# Sequential Tools MCP Server
 
-A Model Context Protocol (MCP) server for sequential storytelling as a mnemonic technique for problem-solving.
+A Model Context Protocol (MCP) server for sequential storytelling and sequential thinking as mnemonic techniques for problem-solving.
 
 ## Overview
 
-Sequential Story is a narrative-based approach to sequential thinking. Instead of tracking abstract thoughts, it structures problems as story elements with characters, settings, and plot developments to make them more memorable and engaging. This approach leverages the mnemonic power of storytelling to enhance memory retention and problem understanding.
+This project offers two complementary MCP tools for structuring complex problems:
+
+1. **Sequential Story** - A narrative-based approach to sequential thinking. Instead of tracking abstract thoughts, it structures problems as story elements with characters, settings, and plot developments to make them more memorable and engaging.
+
+2. **Sequential Thinking** - A flexible analytical tool for breaking down complex problems through a chain of thoughts that can be revised, branched, and built upon as understanding deepens.
+
+Both approaches leverage the power of sequencing and structure to enhance memory retention and problem understanding.
 
 ## Features
 
+### Sequential Story
 - Build problem solutions as narrative sequences
 - Revise and branch story elements as needed
 - Track characters, settings, tones, and plot points
 - Formatted, color-coded display of story elements
+
+### Sequential Thinking
+- Structure problems as a sequence of thoughts
+- Revise or branch thinking paths as needed
+- Generate and verify solution hypotheses
+- Track thinking process completion
+
+### Common Features
+- Formatted, color-coded display of elements
 - Full MCP protocol support for integration with AI systems
+- Support for branching and revision
 
 ## Installation
 
@@ -46,7 +63,7 @@ python main.py
 
 ```bash
 # Install in the Claude desktop app
-mcp install -e . -n "Sequential Story Server" main.py:server
+mcp install -e . -n "Sequential Tools Server" main.py:server
 
 # For development with the MCP Inspector
 mcp dev main.py:server
@@ -67,6 +84,17 @@ mcp dev main.py:server
 }
 ```
 
+### Example thought element
+
+```json
+{
+  "thought": "The problem requires analyzing multiple data sources to identify correlations between customer behavior and sales patterns.",
+  "thoughtNumber": 1,
+  "totalThoughts": 5,
+  "nextThoughtNeeded": true
+}
+```
+
 ## Development
 
 ```bash
@@ -79,4 +107,7 @@ poe pre
 
 ## Credits
 
-This project is inspired by the Sequential Thinking MCP tool, adapting its approach to use narrative structures for enhanced memory and problem-solving.
+This project builds on the concepts of sequential thinking and structured problem-solving, adapting these approaches to both analytical and narrative frameworks for enhanced memory and problem-solving.
+
+The Sequential Thinking implementation is inspired by the JavaScript implementation from the Model Context Protocol repositories:
+https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking

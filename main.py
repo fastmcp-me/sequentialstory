@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Sequential Story MCP Server - A narrative-based mnemonic tool."""
+"""Sequential MCP Tools Server - Narrative and analytical mnemonic tools."""
 
 import logging
 import sys
 
-from src.server import SequentialStoryServer
+from src.server import SequentialToolsServer
 
 # Configure logging
 logging.basicConfig(
@@ -12,15 +12,15 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     stream=sys.stderr,
 )
-logger = logging.getLogger("sequential_story")
+logger = logging.getLogger("sequential_tools")
 
 # Create the server - this is the object we'll export for MCP dev and install
-server = SequentialStoryServer()
+server = SequentialToolsServer()
 
 # When running as a script directly
 if __name__ == "__main__":
     try:
-        logger.info("Starting Sequential Story MCP Server...")
+        logger.info("Starting Sequential Tools MCP Server...")
         server.run()
     except KeyboardInterrupt:
         logger.info("Server stopped by user")
