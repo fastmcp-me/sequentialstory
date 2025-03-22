@@ -19,8 +19,9 @@ logger = get_logger("sequential_tools")
 # Create server instance
 server = SequentialToolsServer()
 
-# When running as a script directly
-if __name__ == "__main__":
+
+def main() -> None:
+    """Entry point function for the sequential-story command."""
     try:
         settings = get_settings()
         logger.info("Starting Sequential Tools MCP Server...")
@@ -34,3 +35,8 @@ if __name__ == "__main__":
     except Exception:
         logger.exception("Unhandled exception")
         sys.exit(1)
+
+
+# When running as a script directly
+if __name__ == "__main__":
+    main()

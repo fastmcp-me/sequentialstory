@@ -9,14 +9,14 @@ description = "A sequential storytelling MCP server for mnemonic problem-solving
 name = "sequential-story"
 readme = "README.md"
 requires-python = ">=3.11"
-version = "0.1.0"
+version = "0.1.1"
 
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [project.scripts]
-sequential-story = "src.main:main"
+sequential-story = "sequential_tools:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src", "tests"]
@@ -176,7 +176,7 @@ strictness = "short" # Options: short, long, full
 [tool.commitizen]
 name = "cz_conventional_commits"
 tag_format = "v$version"
-version = "0.1.0"
+version = "0.1.1"
 
 [tool.interrogate]
 exclude = ["tests", ".venv", ".git"]
