@@ -5,7 +5,7 @@
             "name": "Main",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main.py",
+            "program": "${workspaceFolder}/src/sequential_tools.py",
             "envFile": "${workspaceFolder}/.env",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
