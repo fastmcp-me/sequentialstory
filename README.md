@@ -21,13 +21,16 @@ Sequential Story is a narrative-based approach to sequential thinking. Instead o
 git clone https://github.com/dhkts1/sequentialStory
 cd sequential-story
 
-# Install dependencies using uv
+# Install just the base dependencies using uv
 uv venv
 source .venv/bin/activate
 uv sync
 
+# Install with development dependencies
+uv sync --group dev
+
 # Or install in development mode
-pip install -e .
+uv pip install -e .
 ```
 
 ## Usage

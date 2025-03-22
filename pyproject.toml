@@ -1,8 +1,3 @@
-# This project uses the most bleeding-edge Python tools that are stable enough for production.
-# Tools like Cursor (AI-powered VSCode), UV, Ruff, mkdocs, mkdocstrings, pyright, pyupgrade, flynt, bandit, vulture, interrogate, xenon,
-# and many more represent the latest advancements in the Python ecosystem,
-# offering significant performance improvements over traditional tools.
-
 [project]
 dependencies = [
   "pydantic-settings>=2.8.1",
@@ -27,7 +22,7 @@ sequential-story = "src.main:main"
 packages = ["src", "tests"]
 
 [tool.uv]
-default-groups = ["dev"]
+default-groups = []
 package = true
 
 [dependency-groups]
@@ -136,17 +131,17 @@ skip-magic-trailing-comma = false
 
 [tool.ruff.lint]
 extend-ignore = [
-  "E203", # Not PEP8 compliant and black insert space around slice: [Frequently Asked Questions - Black 22.12.0 documentation](https://black.readthedocs.io/en/stable/faq.html#why-are-flake8-s-e203-and-w503-violated)
-  "E501", # Line too long. Disable it to allow long lines of comments and print lines which black allows.
-  "D401", # First line should be in imperative mood
-  "D203", # Removed incompatible rule (keep D211 instead)
-  "D213", # Removed incompatible rule (keep D212 instead)
-  "COM812", # Removed rule that may conflict with formatter
-  "F811", # Redefined variable from import
+  "E203",
+  "E501",
+  "D401",
+  "D203",
+  "D213",
+  "COM812",
+  "F811",
   "ISC001",
   "BLE001",
   "PGH",
-  "C901", # Too complex
+  "C901",
   "PLR",
   "TRY300",
 ]
