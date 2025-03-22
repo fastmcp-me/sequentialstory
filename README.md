@@ -8,7 +8,7 @@ This project offers two complementary MCP tools for structuring complex problems
 
 1. **Sequential Story** - A narrative-based approach to sequential thinking. Instead of tracking abstract thoughts, it structures problems as story elements with characters, settings, and plot developments to make them more memorable and engaging.
 
-2. **Sequential Thinking** - A flexible analytical tool for breaking down complex problems through a chain of thoughts that can be revised, branched, and built upon as understanding deepens.
+2. **Sequential Thinking** - A pure Python port of the JavaScript implementation, eliminating Node.js dependencies
 
 Both approaches leverage the power of sequencing and structure to enhance memory retention and problem understanding.
 
