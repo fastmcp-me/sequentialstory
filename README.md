@@ -70,18 +70,13 @@ mcp dev main.py:server
 ## Development
 
 ```bash
+# Install pre-commit hooks
+uv run pre-commit install
+
 # Run all pre-commit checks
 poe pre
-
-# Update __init__.py files
-poe mkinit
-
-# Run tests
-pytest
 ```
 
 ## Credits
 
 This project is inspired by the Sequential Thinking MCP tool, adapting its approach to use narrative structures for enhanced memory and problem-solving.
-
-https://github.com/modelcontextprotocol/servers/tree/main/src/sequentialthinking
