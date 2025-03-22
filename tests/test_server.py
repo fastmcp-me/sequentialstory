@@ -1,155 +1,198 @@
-"""Tests for the Sequential Tools server module."""
+"""Tests for the server module."""
 
 from unittest.mock import MagicMock, patch
 
-from src.sequential_story_processor import ContentItem, ProcessResult, StoryElementData
-from src.sequential_thinking_processor import SequentialThoughtData
 from src.server import SequentialToolsServer
+from src.utils.settings import ToolType
 
 
+@patch("src.server.settings")
 class TestSequentialToolsServer:
     """Tests for the SequentialToolsServer class."""
 
-    def test_init(self) -> None:
+    @patch("src.server.FastMCP")
+    def test_init(self, mock_fast_mcp: MagicMock, mock_settings: MagicMock) -> None:
         """Test server initialization."""
-        with (
-            patch("src.server.FastMCP") as mock_fastmcp,
-            patch("src.server.SequentialStoryProcessor") as mock_story_processor,
-            patch("src.server.SequentialThinkingProcessor") as mock_thinking_processor,
-        ):
-            # Setup mock
-            mock_instance = mock_fastmcp.return_value
+        # Setup mock settings with both tools enabled
+        mock_settings.enabled_tools = [ToolType.STORY, ToolType.THINKING]
+        mock_settings.server_metadata = {
+            "name": "test-name",
+            "version": "test-version",
+        }
 
-            # Create server
+        # Initialize server
+        server = SequentialToolsServer()
+
+        # Verify FastMCP was initialized with correct parameters
+        mock_fast_mcp.assert_called_once()
+        _, kwargs = mock_fast_mcp.call_args
+        assert kwargs["name"] == "test-name"
+        assert kwargs["version"] == "test-version"
+        assert "Sequential Thinking and Sequential Story" in kwargs["description"]
+
+        # Verify the MCP instance was created
+        assert server.mcp is mock_fast_mcp.return_value
+
+    def test_get_description_both_tools(self, mock_settings: MagicMock) -> None:
+        """Test description with both tools enabled."""
+        # Setup mock settings
+        mock_settings.enabled_tools = [ToolType.STORY, ToolType.THINKING]
+
+        # Assert directly on initialization params
+        with patch("src.server.FastMCP") as mock_fast_mcp:
+            SequentialToolsServer()
+            _, kwargs = mock_fast_mcp.call_args
+            assert "Sequential Thinking and Sequential Story" in kwargs["description"]
+
+    def test_get_description_thinking_only(self, mock_settings: MagicMock) -> None:
+        """Test description with only thinking tool enabled."""
+        # Setup mock settings
+        mock_settings.enabled_tools = [ToolType.THINKING]
+
+        # Assert directly on initialization params
+        with patch("src.server.FastMCP") as mock_fast_mcp:
+            SequentialToolsServer()
+            _, kwargs = mock_fast_mcp.call_args
+            assert "Sequential Thinking tool" in kwargs["description"]
+            assert "Sequential Story" not in kwargs["description"]
+
+    def test_get_description_story_only(self, mock_settings: MagicMock) -> None:
+        """Test description with only story tool enabled."""
+        # Setup mock settings
+        mock_settings.enabled_tools = [ToolType.STORY]
+
+        # Assert directly on initialization params
+        with patch("src.server.FastMCP") as mock_fast_mcp:
+            SequentialToolsServer()
+            _, kwargs = mock_fast_mcp.call_args
+            assert "Sequential Story tool" in kwargs["description"]
+            assert "Sequential Thinking" not in kwargs["description"]
+
+    def test_get_description_no_tools(self, mock_settings: MagicMock) -> None:
+        """Test description with no tools enabled."""
+        # Setup mock settings
+        mock_settings.enabled_tools = []
+
+        # Assert directly on initialization params
+        with patch("src.server.FastMCP") as mock_fast_mcp:
+            SequentialToolsServer()
+            _, kwargs = mock_fast_mcp.call_args
+            assert "no tools enabled" in kwargs["description"]
+
+    @patch("src.server.SequentialStoryProcessor")
+    @patch("src.server.SequentialThinkingProcessor")
+    def test_initialize_tools_both(
+        self,
+        mock_thinking_processor: MagicMock,
+        mock_story_processor: MagicMock,
+        mock_settings: MagicMock,
+    ) -> None:
+        """Test tool initialization with both tools enabled."""
+        # Setup mock settings
+        mock_settings.enabled_tools = [ToolType.STORY, ToolType.THINKING]
+
+        # Create server instance with mocked MCP
+        mock_mcp = MagicMock()
+        with patch("src.server.FastMCP", return_value=mock_mcp):
+            # Create server (initialization will call _initialize_tools)
+            SequentialToolsServer()
+
+        # Verify both processors were created and registered with MCP
+        mock_story_processor.assert_called_once()
+        mock_thinking_processor.assert_called_once()
+        mock_story_processor.return_value.register_with_mcp.assert_called_once_with(mock_mcp)
+        mock_thinking_processor.return_value.register_with_mcp.assert_called_once_with(mock_mcp)
+
+    @patch("src.server.SequentialStoryProcessor")
+    @patch("src.server.SequentialThinkingProcessor")
+    def test_initialize_tools_story_only(
+        self,
+        mock_thinking_processor: MagicMock,
+        mock_story_processor: MagicMock,
+        mock_settings: MagicMock,
+    ) -> None:
+        """Test tool initialization with only story tool enabled."""
+        # Setup mock settings
+        mock_settings.enabled_tools = [ToolType.STORY]
+
+        # Create server instance with mocked MCP
+        mock_mcp = MagicMock()
+        with patch("src.server.FastMCP", return_value=mock_mcp):
+            # Create server (initialization will call _initialize_tools)
+            SequentialToolsServer()
+
+        # Verify only story processor was created and registered with MCP
+        mock_story_processor.assert_called_once()
+        mock_thinking_processor.assert_not_called()
+        mock_story_processor.return_value.register_with_mcp.assert_called_once_with(mock_mcp)
+
+    @patch("src.server.SequentialStoryProcessor")
+    @patch("src.server.SequentialThinkingProcessor")
+    def test_initialize_tools_thinking_only(
+        self,
+        mock_thinking_processor: MagicMock,
+        mock_story_processor: MagicMock,
+        mock_settings: MagicMock,
+    ) -> None:
+        """Test tool initialization with only thinking tool enabled."""
+        # Setup mock settings
+        mock_settings.enabled_tools = [ToolType.THINKING]
+
+        # Create server instance with mocked MCP
+        mock_mcp = MagicMock()
+        with patch("src.server.FastMCP", return_value=mock_mcp):
+            # Create server (initialization will call _initialize_tools)
+            SequentialToolsServer()
+
+        # Verify only thinking processor was created and registered with MCP
+        mock_story_processor.assert_not_called()
+        mock_thinking_processor.assert_called_once()
+        mock_thinking_processor.return_value.register_with_mcp.assert_called_once_with(mock_mcp)
+
+    @patch("src.server.SequentialStoryProcessor")
+    @patch("src.server.SequentialThinkingProcessor")
+    def test_initialize_tools_none(
+        self,
+        mock_thinking_processor: MagicMock,
+        mock_story_processor: MagicMock,
+        mock_settings: MagicMock,
+    ) -> None:
+        """Test tool initialization with no tools enabled."""
+        # Setup mock settings
+        mock_settings.enabled_tools = []
+
+        # Create server instance with mocked MCP
+        mock_mcp = MagicMock()
+        with patch("src.server.FastMCP", return_value=mock_mcp):
+            # Create server (initialization will call _initialize_tools)
+            SequentialToolsServer()
+
+        # Verify no processors were created or registered
+        mock_story_processor.assert_not_called()
+        mock_thinking_processor.assert_not_called()
+
+    def test_run(self, mock_settings: MagicMock) -> None:
+        """Test run method."""
+        # Setup mock settings
+        mock_settings.enabled_tools = []
+
+        # Create mocked MCP
+        mock_mcp = MagicMock()
+
+        # Create server instance with mocked MCP
+        with patch("src.server.FastMCP", return_value=mock_mcp):
             server = SequentialToolsServer()
+            server.run()
 
-            # Check initialization
-            mock_fastmcp.assert_called_once_with(
-                name="sequential-tools-server",
-                version="0.1.0",
-                description="Sequential Thinking and Sequential Story tools for MCP",
-            )
-            mock_story_processor.assert_called_once()
-            mock_thinking_processor.assert_called_once()
-            assert server.mcp == mock_instance
-            assert server.story_processor == mock_story_processor.return_value
-            assert server.thinking_processor == mock_thinking_processor.return_value
-
-    def test_create_sequentialstory_tool(self) -> None:
-        """Test creation of the Sequential Story tool."""
-        with patch("src.server.FastMCP"):
-            # Setup mocks
-            server = SequentialToolsServer()
-            server.mcp = MagicMock()
-            mock_tool_decorator = MagicMock()
-            server.mcp.tool.return_value = mock_tool_decorator
-
-            # Mock the processor's process_element method
-            server.story_processor = MagicMock()
-            server.story_processor.process_element.return_value = ProcessResult(
-                content=[ContentItem(type="text", text="Test")]
-            )
-
-            # Call the method to test
-            result = server.create_sequentialstory_tool()
-
-            # Verify it returns a callable
-            assert callable(result)
-
-            # Check that the tool decorator was used
-            server.mcp.tool.assert_called_once()
-
-    def test_create_sequentialthinking_tool(self) -> None:
-        """Test creation of the Sequential Thinking tool."""
-        with patch("src.server.FastMCP"):
-            # Setup mocks
-            server = SequentialToolsServer()
-            server.mcp = MagicMock()
-            mock_tool_decorator = MagicMock()
-            server.mcp.tool.return_value = mock_tool_decorator
-
-            # Mock the processor's process_thought method
-            server.thinking_processor = MagicMock()
-            server.thinking_processor.process_thought.return_value = ProcessResult(
-                content=[ContentItem(type="text", text="Test")]
-            )
-
-            # Call the method to test
-            result = server.create_sequentialthinking_tool()
-
-            # Verify it returns a callable
-            assert callable(result)
-
-            # Check that the tool decorator was used
-            server.mcp.tool.assert_called_once()
-
-    def test_sequentialstory_function(self) -> None:
-        """Test the Sequential Story function."""
-        # Setup server with mocked components
-        with patch("src.server.SequentialStoryProcessor") as mock_processor_class:
-            # Setup the processor mock
-            mock_processor = MagicMock()
-            mock_processor_class.return_value = mock_processor
-
-            # Create test data
-            expected_result = ProcessResult(content=[ContentItem(type="text", text="Test result")])
-            mock_processor.process_element.return_value = expected_result
-
-            # Create server - this will use our mocked processor
-            server = SequentialToolsServer()
-
-            # Get the sequentialstory function
-            sequentialstory = server.create_sequentialstory_tool()
-
-            # Create test input
-            test_input = StoryElementData(
-                element="Test element",
-                element_number=1,
-                total_elements=3,
-                next_element_needed=True,
-            )
-
-            # Call the function
-            result = sequentialstory(test_input)
-
-            # Verify the result
-            mock_processor.process_element.assert_called_once_with(test_input)
-            assert result == expected_result
-
-    def test_sequentialthinking_function(self) -> None:
-        """Test the Sequential Thinking function."""
-        # Setup server with mocked components
-        with patch("src.server.SequentialThinkingProcessor") as mock_processor_class:
-            # Setup the processor mock
-            mock_processor = MagicMock()
-            mock_processor_class.return_value = mock_processor
-
-            # Create test data
-            expected_result = ProcessResult(content=[ContentItem(type="text", text="Test result")])
-            mock_processor.process_thought.return_value = expected_result
-
-            # Create server - this will use our mocked processor
-            server = SequentialToolsServer()
-
-            # Get the sequentialthinking function
-            sequentialthinking = server.create_sequentialthinking_tool()
-
-            # Create test input
-            test_input = SequentialThoughtData(
-                thought="Test thought",
-                thought_number=1,
-                total_thoughts=3,
-                next_thought_needed=True,
-            )
-
-            # Call the function
-            result = sequentialthinking(test_input)
-
-            # Verify the result
-            mock_processor.process_thought.assert_called_once_with(test_input)
-            assert result == expected_result
+        # Verify MCP run was called
+        mock_mcp.run.assert_called_once()
 
 
-# For backward compatibility in tests
-class TestSequentialStoryServer(TestSequentialToolsServer):
-    """Tests for the SequentialStoryServer class (alias for SequentialToolsServer)."""
+class TestBackwardCompatibility:
+    """Tests for backward compatibility."""
+
+    def test_sequential_story_server_alias(self) -> None:
+        """Test that SequentialStoryServer is an alias for SequentialToolsServer."""
+        from src.server import SequentialStoryServer, SequentialToolsServer
+
+        assert SequentialStoryServer == SequentialToolsServer

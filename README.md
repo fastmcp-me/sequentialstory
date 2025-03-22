@@ -33,21 +33,21 @@ Both approaches leverage the power of sequencing and structure to enhance memory
 
 ## Configuration
 
-The Sequential Tools server can be configured to enable specific tools using the command line `--enable` argument:
+The Sequential Tools server can be configured to enable specific tools using environment variables or command line arguments:
 
 ```bash
 # Enable both tools (default)
 python sequential_tools.py
 
 # Enable only the Sequential Thinking tool
-python sequential_tools.py --enable thinking
+python sequential_tools.py --tools=thinking
 
 # Enable only the Sequential Story tool
-python sequential_tools.py --enable story
+python sequential_tools.py --tools=story
+
+# Enable multiple tools
+python sequential_tools.py --tools=thinking,story
 ```
-
-By default, both tools (Sequential Thinking and Sequential Story) are enabled.
-
 ## Installation
 
 ```bash
@@ -73,10 +73,13 @@ You can install the server with only specific tools enabled:
 
 ```bash
 # Install with only the Sequential Thinking tool
-mcp install -e . -n "Sequential Thinking" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_ENABLE=thinking"
+mcp install -e . -n "Sequential Thinking" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_TOOLS=thinking"
 
 # Install with only the Sequential Story tool
-mcp install -e . -n "Sequential Story" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_ENABLE=story"
+mcp install -e . -n "Sequential Story" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_TOOLS=story"
+
+# Install with multiple tools
+mcp install -e . -n "Sequential Tools" sequential_tools.py:server --env-var "SEQUENTIAL_TOOLS_TOOLS=thinking,story"
 ```
 
 This is useful when you want to focus on a specific problem-solving approach or when integrating with other MCP tools. You can also update the environment variables directly in the Claude desktop app after installation.
@@ -100,19 +103,6 @@ mcp install -e . -n "Sequential Tools" sequential_tools.py:server
 mcp dev sequential_tools.py:server
 ```
 
-### Installing with Smithery
-
-To register and install with Smithery:
-
-1. Visit [Smithery.ai](https://smithery.ai) and create an account
-2. Add your server to the Smithery registry
-3. Use the stdin/stdout transport option (not WebSockets)
-4. Deploy your server following Smithery's instructions
-
-```bash
-# Local testing for Smithery compatibility
-python sequential_tools.py
-```
 
 ### Example story element
 

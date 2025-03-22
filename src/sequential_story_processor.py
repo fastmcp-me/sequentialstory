@@ -1,7 +1,10 @@
 """Implementation of the sequential story processor for mnemonic storytelling."""
 
+from collections.abc import Callable
 from typing import Any, Self
 
+# Add imports for mcp
+from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, model_validator
 from rich.console import Console
 from rich.panel import Panel
@@ -349,3 +352,68 @@ class SequentialStoryProcessor:
             return ProcessResult.create_success(element, list(self.branches.keys()), len(self.element_history))
         except Exception as e:
             return ProcessResult.create_error(e)
+
+    def register_with_mcp(self, mcp: FastMCP) -> Callable[[StoryElementData], ProcessResult]:
+        """Register the Sequential Story tool with an MCP server.
+
+        Args:
+            mcp: The MCP server to register with
+
+        Returns:
+            The registered tool function
+
+        """
+
+        @mcp.tool(
+            description="""A detailed tool for narrative-based problem-solving through Sequential Story.
+
+        This tool helps structure complex problems as story elements that build on each other.
+        Each element contributes to a coherent narrative that's easier to remember than abstract concepts.
+
+        When to use this tool:
+        - Breaking down complex problems into memorable story elements
+        - Creating mnemonic devices for better retention
+        - Developing ideas with narrative structure for easier recall
+        - Problem exploration that benefits from character, setting, and plot
+        - Tasks where memory enhancement is valuable
+        - Building coherent mental models through storytelling
+        - Creating knowledge frameworks that are easier to memorize
+
+        Key features:
+        - You can adjust total_elements count as your story develops
+        - You can revise previous elements when needed
+        - You can branch into alternative storylines
+        - You can incorporate characters, settings, tones, and plot points
+        - Not every element needs to follow linearly - you can branch or introduce new narrative paths
+        - Uses storytelling as a mnemonic technique to enhance retention
+        - Leverages narrative structure to make complex concepts more memorable
+
+        Parameters explained:
+        - element: Your current story element
+        - next_element_needed: True if the story should continue
+        - element_number: Current element number in sequence
+        - total_elements: Current estimate of elements needed
+        - is_revision: A boolean indicating if this revises a previous element
+        - revises_element: If is_revision is true, which element is being reconsidered
+        - branch_from_element: If branching, which element number is the branching point
+        - branch_id: Identifier for the current branch
+        - needs_more_elements: If reaching end but realizing more elements needed
+        - character: Optional character involved in this element
+        - setting: Optional setting for this element
+        - tone: Optional emotional tone of this element
+        - plot_point: Optional plot development in this element
+
+        You should:
+        1. Start with an initial estimate of needed elements, but be ready to adjust
+        2. Use narrative structure to enhance memorability
+        3. Incorporate story elements like characters and settings to make concepts more tangible
+        4. Revise elements when needed to refine the narrative
+        5. Branch into alternative storylines when exploring different possibilities
+        6. Use mnemonic techniques to make your story more memorable
+        7. Only set next_element_needed to false when the story is complete"""
+        )
+        def sequentialstory(data: StoryElementData) -> ProcessResult:
+            """Process a Sequential Story element."""
+            return self.process_element(data)
+
+        return sequentialstory

@@ -10,5 +10,5 @@ __getattr__, __dir__, __all__ = lazy_loader.attach_stub(__name__, __file__)
 __all__ = ['ContentItem', 'ProcessResult', 'SequentialStoryProcessor',
            'SequentialStoryServer', 'SequentialThinkingProcessor',
            'SequentialThoughtData', 'SequentialToolsServer',
-           'StoryElementData', 'ToolType', 'sequential_story_processor',
-           'sequential_thinking_processor', 'server']
+           'StoryElementData', 'sequential_story_processor',
+           'sequential_thinking_processor', 'server', 'settings']
