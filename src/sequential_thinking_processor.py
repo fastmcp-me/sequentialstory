@@ -66,7 +66,7 @@ class ProcessResult(BaseModel):
         return cls(
             content=[
                 ContentItem(
-                    type="text",
+                    type="json",
                     text={
                         "thought_number": data.thought_number,
                         "total_thoughts": data.total_thoughts,
@@ -93,7 +93,7 @@ class ProcessResult(BaseModel):
         return cls(
             content=[
                 ContentItem(
-                    type="text",
+                    type="json",
                     text={
                         "error": str(error),
                         "status": "failed",

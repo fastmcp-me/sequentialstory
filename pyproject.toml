@@ -9,7 +9,7 @@ description = "A sequential storytelling MCP server for mnemonic problem-solving
 name = "sequential-story"
 readme = "README.md"
 requires-python = ">=3.11"
-version = "1.0.0"
+version = "1.0.1"
 authors = [{ name = "dhkts1" }]
 keywords = ["mcp", "llm", "sequential-thinking", "storytelling","sequential-story"]
 license = { text = "MIT" }

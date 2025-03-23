@@ -80,7 +80,7 @@ class TestProcessResult:
         result = ProcessResult.create_success(data, branches, history_length)
 
         assert len(result.content) == 1
-        assert result.content[0].type == "text"
+        assert result.content[0].type == "json"
         assert isinstance(result.content[0].text, dict)
         content_text = result.content[0].text
         assert content_text.get("thought_number") == 1
@@ -95,7 +95,7 @@ class TestProcessResult:
         result = ProcessResult.create_error(error)
 
         assert len(result.content) == 1
-        assert result.content[0].type == "text"
+        assert result.content[0].type == "json"
         assert isinstance(result.content[0].text, dict)
         content_text = result.content[0].text
         assert content_text.get("error") == "Test error"
@@ -214,7 +214,7 @@ class TestSequentialThinkingProcessor:
             # Check the result
             assert isinstance(result, ProcessResult)
             assert len(result.content) == 1
-            assert result.content[0].type == "text"
+            assert result.content[0].type == "json"
             content_text = result.content[0].text
             assert isinstance(content_text, dict)
             assert content_text.get("thought_number") == 1

@@ -142,7 +142,7 @@ class ProcessResult(BaseModel):
         return cls(
             content=[
                 ContentItem(
-                    type="text",
+                    type="json",
                     text={
                         "element_number": data.element_number,
                         "total_elements": data.total_elements,
@@ -169,7 +169,7 @@ class ProcessResult(BaseModel):
         return cls(
             content=[
                 ContentItem(
-                    type="text",
+                    type="json",
                     text={
                         "error": str(error),
                         "status": "failed",

@@ -55,8 +55,8 @@ class TestContentItem:
 
     def test_dict_content(self) -> None:
         """Test creation with dictionary content."""
-        item = ContentItem(type="text", text={"key": "value"})
-        assert item.type == "text"
+        item = ContentItem(type="json", text={"key": "value"})
+        assert item.type == "json"
         assert item.text == {"key": "value"}
 
 
@@ -74,7 +74,7 @@ class TestProcessResult:
         result = ProcessResult.create_success(element, ["branch1"], 5)
         assert result.is_error is None
         assert len(result.content) == 1
-        assert result.content[0].type == "text"
+        assert result.content[0].type == "json"
         assert isinstance(result.content[0].text, dict)
         assert result.content[0].text["element_number"] == 1
         assert result.content[0].text["total_elements"] == 3
@@ -88,7 +88,7 @@ class TestProcessResult:
         result = ProcessResult.create_error(error)
         assert result.is_error is True
         assert len(result.content) == 1
-        assert result.content[0].type == "text"
+        assert result.content[0].type == "json"
         assert isinstance(result.content[0].text, dict)
         assert result.content[0].text["error"] == "Test error"
         assert result.content[0].text["status"] == "failed"
@@ -131,7 +131,7 @@ class TestSequentialStoryProcessor:
         assert processor.element_history[0] == element
         assert result.is_error is None
         assert len(result.content) == 1
-        assert result.content[0].type == "text"
+        assert result.content[0].type == "json"
         assert isinstance(result.content[0].text, dict)
         assert result.content[0].text["element_number"] == 1
         assert result.content[0].text["element_history_length"] == 1
